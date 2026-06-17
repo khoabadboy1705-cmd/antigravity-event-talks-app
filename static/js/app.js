@@ -22,6 +22,7 @@ const feedLoader = document.getElementById('feed-loader');
 const feedContent = document.getElementById('feed-content');
 const feedEmpty = document.getElementById('feed-empty');
 const btnRefresh = document.getElementById('btn-refresh');
+const btnExportCsv = document.getElementById('btn-export-csv');
 const statTotalValue = document.getElementById('stat-total-value');
 const statSourceValue = document.getElementById('stat-source-value');
 const cacheTimeDisplay = document.getElementById('cache-time-display');
@@ -68,6 +69,9 @@ document.addEventListener('DOMContentLoaded', () => {
     btnRefresh.addEventListener('click', () => {
         fetchReleases(true);
     });
+
+    // Export CSV listener
+    btnExportCsv.addEventListener('click', exportToCsv);
 
     // Search input listener
     searchInput.addEventListener('input', (e) => {
@@ -322,7 +326,30 @@ function renderFeed() {
                 openTweetComposer(release.date, item);
             });
 
+            // Copy card content to clipboard trigger
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'btn btn-card-copy';
+            copyBtn.innerHTML = `
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                <span>Copy</span>
+            `;
+            copyBtn.addEventListener('click', () => {
+                const textToCopy = `📢 BigQuery [${item.type.toUpperCase()}] (${release.date}):\n${item.text_content}`;
+                navigator.clipboard.writeText(textToCopy)
+                    .then(() => {
+                        showToast("Card text copied to clipboard!");
+                    })
+                    .catch(err => {
+                        console.error('Failed to copy text: ', err);
+                        showToast("Failed to copy card text", true);
+                    });
+            });
+
             actionsDiv.appendChild(tweetBtn);
+            actionsDiv.appendChild(copyBtn);
             headerDiv.appendChild(badgeSpan);
             headerDiv.appendChild(actionsDiv);
 
@@ -465,6 +492,59 @@ function publishTweet() {
     const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
     window.open(shareUrl, '_blank', 'noopener,noreferrer,width=600,height=400');
     closeModal();
+}
+
+// Export filtered releases to CSV file
+function exportToCsv() {
+    if (!state.filteredReleases || state.filteredReleases.length === 0) {
+        showToast("No data available to export!", true);
+        return;
+    }
+
+    // Define CSV headers
+    const headers = ["Date", "Type", "Content"];
+    
+    // Generate CSV rows
+    const rows = [];
+    state.filteredReleases.forEach(release => {
+        release.items.forEach(item => {
+            // Clean content: escape double quotes, strip outer spaces
+            const escapedContent = item.text_content
+                .replace(/"/g, '""') // Escape double quotes by doubling them
+                .trim();
+            
+            rows.push([
+                `"${release.date}"`,
+                `"${item.type}"`,
+                `"${escapedContent}"`
+            ]);
+        });
+    });
+
+    // Combine headers and rows
+    const csvContent = [
+        headers.join(","),
+        ...rows.map(row => row.join(","))
+    ].join("\n");
+
+    // Create a Blob with UTF-8 encoding (and BOM to support Excel opening CSV correctly with UTF-8 characters)
+    const blob = new Blob(["\ufeff" + csvContent], { type: 'text/csv;charset=utf-8;' });
+    
+    // Generate download link and trigger click
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    
+    // Set appropriate filename with date/time of export
+    const exportTime = new Date().toISOString().slice(0, 10);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `bigquery_release_notes_${exportTime}.csv`);
+    link.style.visibility = 'hidden';
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    showToast("CSV export completed successfully!");
 }
 
 // Toast Notifications helper
