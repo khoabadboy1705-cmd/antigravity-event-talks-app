@@ -1,3 +1,8 @@
+// Immediate Theme Check to prevent flash
+if (localStorage.getItem('theme') === 'light') {
+    document.body.classList.add('light-theme');
+}
+
 // Application State
 let state = {
     releases: [],
@@ -23,6 +28,7 @@ const feedContent = document.getElementById('feed-content');
 const feedEmpty = document.getElementById('feed-empty');
 const btnRefresh = document.getElementById('btn-refresh');
 const btnExportCsv = document.getElementById('btn-export-csv');
+const btnThemeToggle = document.getElementById('btn-theme-toggle');
 const statTotalValue = document.getElementById('stat-total-value');
 const statSourceValue = document.getElementById('stat-source-value');
 const cacheTimeDisplay = document.getElementById('cache-time-display');
@@ -72,6 +78,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Export CSV listener
     btnExportCsv.addEventListener('click', exportToCsv);
+
+    // Theme toggle listener
+    btnThemeToggle.addEventListener('click', toggleTheme);
 
     // Search input listener
     searchInput.addEventListener('input', (e) => {
@@ -545,6 +554,13 @@ function exportToCsv() {
     document.body.removeChild(link);
     
     showToast("CSV export completed successfully!");
+}
+
+// Toggle Light/Dark Theme
+function toggleTheme() {
+    const isLight = document.body.classList.toggle('light-theme');
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    showToast(`${isLight ? 'Light' : 'Dark'} theme applied!`);
 }
 
 // Toast Notifications helper

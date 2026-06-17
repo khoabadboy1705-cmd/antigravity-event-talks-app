@@ -42,6 +42,15 @@
     --transition-speed: 0.25s;
     --card-radius: 16px;
     --blur-radius: 12px;
+
+    --modal-bg: #151822;
+    --modal-border: rgba(255, 255, 255, 0.1);
+    --input-bg: rgba(15, 23, 42, 0.45);
+    --x-preview-bg: #000000;
+    --x-preview-border: #2f3336;
+    --x-preview-text-primary: #e7e9ea;
+    --x-preview-text-secondary: #71767b;
+    --logo-gradient: linear-gradient(to right, #ffffff, #d1d5db);
 }
 
 body {
@@ -136,7 +145,7 @@ body {
     font-size: 1.5rem;
     font-weight: 700;
     letter-spacing: -0.5px;
-    background: linear-gradient(to right, #ffffff, #d1d5db);
+    background: var(--logo-gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -296,7 +305,7 @@ body {
     width: 100%;
     padding: 0.8rem 1rem 0.8rem 2.8rem;
     border-radius: 12px;
-    background: rgba(15, 23, 42, 0.45);
+    background: var(--input-bg);
     border: 1px solid var(--panel-border);
     color: var(--text-primary);
     font-size: 0.9rem;
@@ -718,8 +727,8 @@ body {
 }
 
 .modal-card {
-    background: #151822;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--modal-bg);
+    border: 1px solid var(--modal-border);
     width: 100%;
     max-width: 550px;
     border-radius: 20px;
@@ -774,8 +783,8 @@ body {
 
 /* X / Twitter Mockup Box */
 .x-post-preview {
-    background: #000000;
-    border: 1px solid #2f3336;
+    background: var(--x-preview-bg);
+    border: 1px solid var(--x-preview-border);
     border-radius: 16px;
     padding: 1.25rem;
     display: flex;
@@ -816,15 +825,15 @@ body {
 
 .x-author-name {
     font-weight: 700;
-    color: #e7e9ea;
+    color: var(--x-preview-text-primary);
 }
-
+ 
 .x-author-handle {
-    color: #71767b;
+    color: var(--x-preview-text-secondary);
 }
-
+ 
 .x-dot, .x-time {
-    color: #71767b;
+    color: var(--x-preview-text-secondary);
 }
 
 .textarea-container {
@@ -836,7 +845,7 @@ body {
     width: 100%;
     background: transparent;
     border: none;
-    color: #e7e9ea;
+    color: var(--x-preview-text-primary);
     font-size: 1rem;
     line-height: 1.5;
     outline: none;
@@ -844,9 +853,9 @@ body {
     padding: 0;
     font-family: inherit;
 }
-
+ 
 #tweet-textarea::placeholder {
-    color: #71767b;
+    color: var(--x-preview-text-secondary);
 }
 
 .x-post-footer {
@@ -1009,4 +1018,88 @@ body {
     .app-container {
         padding: 1rem;
     }
+}
+
+/* Light Theme Variables & Overrides */
+body.light-theme {
+    --bg-dark: #f1f5f9;
+    --panel-bg: rgba(255, 255, 255, 0.7);
+    --panel-border: rgba(15, 23, 42, 0.08);
+    --panel-border-hover: rgba(15, 23, 42, 0.16);
+    
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+    
+    --primary-blue: #2563eb;
+    --primary-blue-glow: rgba(37, 99, 235, 0.08);
+    
+    --bg-feature: rgba(16, 185, 129, 0.08);
+    --border-feature: rgba(16, 185, 129, 0.15);
+    
+    --bg-changed: rgba(139, 92, 246, 0.08);
+    --border-changed: rgba(139, 92, 246, 0.15);
+    
+    --bg-issue: rgba(244, 63, 94, 0.08);
+    --border-issue: rgba(244, 63, 94, 0.15);
+    
+    --bg-deprecated: rgba(245, 158, 11, 0.08);
+    --border-deprecated: rgba(245, 158, 11, 0.15);
+    
+    --bg-general: rgba(59, 130, 246, 0.08);
+    --border-general: rgba(59, 130, 246, 0.15);
+    
+    --modal-bg: #ffffff;
+    --modal-border: rgba(15, 23, 42, 0.12);
+    --input-bg: rgba(255, 255, 255, 0.95);
+    --x-preview-bg: #ffffff;
+    --x-preview-border: #cfd9de;
+    --x-preview-text-primary: #0f1419;
+    --x-preview-text-secondary: #536471;
+    --logo-gradient: linear-gradient(to right, #0f172a, #334155);
+}
+
+body.light-theme .bg-glow {
+    opacity: 0.07;
+}
+
+/* Theme Toggle Button Styling */
+.btn-theme-toggle {
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-primary);
+    border: 1px solid var(--panel-border);
+    padding: 0.75rem;
+    border-radius: 12px;
+}
+
+body.light-theme .btn-theme-toggle {
+    background: rgba(15, 23, 42, 0.04);
+}
+
+.btn-theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--panel-border-hover);
+    transform: translateY(-2px);
+}
+
+body.light-theme .btn-theme-toggle:hover {
+    background: rgba(15, 23, 42, 0.08);
+}
+
+.btn-theme-toggle:active {
+    transform: translateY(0);
+}
+
+/* Theme Toggle Icon visibility */
+body.light-theme .icon-sun {
+    display: none !important;
+}
+body.light-theme .icon-moon {
+    display: block !important;
+}
+body:not(.light-theme) .icon-sun {
+    display: block !important;
+}
+body:not(.light-theme) .icon-moon {
+    display: none !important;
 }
