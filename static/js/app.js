@@ -26,6 +26,9 @@ const PROGRESS_RING_CIRCUMFERENCE = 2 * Math.PI * 9; // Radius is 9, Circumferen
 const feedLoader = document.getElementById('feed-loader');
 const feedContent = document.getElementById('feed-content');
 const feedEmpty = document.getElementById('feed-empty');
+const feedError = document.getElementById('feed-error');
+const errorMessageText = document.getElementById('error-message-text');
+const btnRetryFetch = document.getElementById('btn-retry-fetch');
 const btnRefresh = document.getElementById('btn-refresh');
 const btnExportCsv = document.getElementById('btn-export-csv');
 const btnThemeToggle = document.getElementById('btn-theme-toggle');
@@ -81,6 +84,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Theme toggle listener
     btnThemeToggle.addEventListener('click', toggleTheme);
+
+    // Retry fetch listener
+    btnRetryFetch.addEventListener('click', () => {
+        fetchReleases(true);
+    });
 
     // Search input listener
     searchInput.addEventListener('input', (e) => {
@@ -185,6 +193,10 @@ async function fetchReleases(force = false) {
         console.error("Error fetching release notes:", error);
         showToast(`Failed to fetch updates: ${error.message}`, true);
         statSourceValue.textContent = 'Error';
+        
+        if (!state.releases || state.releases.length === 0) {
+            showErrorState(error.message);
+        }
     } finally {
         setLoadingState(false);
     }
@@ -198,12 +210,24 @@ function setLoadingState(isLoading) {
         feedLoader.style.display = 'flex';
         feedContent.style.display = 'none';
         feedEmpty.style.display = 'none';
+        feedError.style.display = 'none';
     } else {
         btnRefresh.classList.remove('loading');
         btnRefresh.disabled = false;
         feedLoader.style.display = 'none';
-        feedContent.style.display = 'block';
+        
+        if (state.releases && state.releases.length > 0) {
+            feedContent.style.display = 'block';
+        }
     }
+}
+
+// Show Initial Load Error State Screen
+function showErrorState(message) {
+    errorMessageText.textContent = `Failed to retrieve release updates: ${message}. Please verify your network connection.`;
+    feedError.style.display = 'flex';
+    feedContent.style.display = 'none';
+    feedEmpty.style.display = 'none';
 }
 
 // Calculate Statistics and Counts for Sidebars
